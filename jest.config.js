@@ -8,4 +8,8 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {},
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '.*\.integration\.test\.js$'
+  ],
 };

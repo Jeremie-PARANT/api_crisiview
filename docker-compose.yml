@@ -1,0 +1,46 @@
+services:
+  db:
+    image: mysql:8.4.8
+    container_name: mysql-crisiview
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: incident_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: .
+    container_name: crisis-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: incident_db
+      DB_PORT: 3306
+    ports:
+      - "3001:3001"
+  migrate:
+    build: .
+    command: sh -c "node migration.js && node seed.js"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: incident_db
+      DB_PORT: 3306
+
+volumes:
+  db_data:
