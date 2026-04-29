@@ -16,7 +16,7 @@ services:
       retries: 20
 
   api:
-    build: .
+    image: enorkil/api-crisiview:latest
     container_name: crisis-api
     depends_on:
       db:
@@ -29,8 +29,11 @@ services:
       DB_PORT: 3306
     ports:
       - "3001:3001"
+    restart: always
+
   migrate:
-    build: .
+    image: enorkil/api-crisiview:latest
+    container_name: crisis-migrate
     command: sh -c "node migration.js && node seed.js"
     depends_on:
       db:
